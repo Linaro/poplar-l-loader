@@ -39,13 +39,23 @@
  * ARM Trusted Firmware requires each of its boot stage images to start
  * on a page boundary.  LLOADER_TEXT_BASE is page-aligned.  The position in
  * memory of the BL1 image is an offset from that base address, so this
- * must be a multiple of a page size (i.e., end in 000).
+ * must be a multiple of a page size.  And the space reserved for BL2
+ * and BL31 follow immediately after BL1 memory, so the sizes used for
+ * BL1 and BL2 must also be multiples of a page size (i.e., end in 000).
  */
 #define LLOADER_TEXT_BASE			(0x1000)
 #define CONFIG_ATF_BL1_POS			(0xD000)
 #define LLOADER_BL1_BIN				(LLOADER_TEXT_BASE + \
 							CONFIG_ATF_BL1_POS)
 #define CONFIG_ATF_BL1_SIZE			(0x13000 + 0x8000)
+
+#define CONFIG_ATF_BL2_POS			(CONFIG_ATF_BL1_POS + \
+							CONFIG_ATF_BL1_SIZE)
+#define CONFIG_ATF_BL2_SIZE			(0x40000)
+
+#define CONFIG_ATF_BL31_POS			(CONFIG_ATF_BL2_POS + \
+							CONFIG_ATF_BL2_SIZE)
+#define CONFIG_ATF_BL31_SIZE			(0x18000)
 
 /* 2. BOOTROM REQUIREMENTS */
 #define CONFIG_AUXAREA_ADR_POS			(0x214)
@@ -209,12 +219,18 @@ reg_list_end:
 .=CONFIG_ATF_BL1_POS
 .incbin "atf/bl1.bin"
 
+.=CONFIG_ATF_BL2_POS
+.skip CONFIG_ATF_BL2_SIZE,0
+
+.=CONFIG_ATF_BL31_POS
+.skip CONFIG_ATF_BL31_SIZE,0
+
 /*
  * +--------------------------------------------+
  * | 9. Reset and debug code			|
  * +--------------------------------------------+
  */
-.=CONFIG_ATF_BL1_POS + CONFIG_ATF_BL1_SIZE
+.=CONFIG_ATF_BL31_POS + CONFIG_ATF_BL31_SIZE
 reset:
 	isb
 
