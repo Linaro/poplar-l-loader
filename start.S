@@ -10,9 +10,9 @@
  */
 
 /*
- * +-------------------------------------------+
+ * +--------------------------------------------+
  * | HW info					|
- * +-------------------------------------------+
+ * +--------------------------------------------+
  */
 #define REG_BASE_SCTL				(0xF8000000)
 #define REG_SC_GEN1				(0x0084)
@@ -23,21 +23,22 @@
 
 #define REG_SYS_CNT_BASE			(0xF8BB0000)
 #define REG_SYS_CNTCR				(REG_SYS_CNT_BASE)
-#define REG_SYS_CNTFID0			(REG_SYS_CNT_BASE + 0x20)
+#define REG_SYS_CNTFID0				(REG_SYS_CNT_BASE + 0x20)
 
 #define CPU_CTRL_AARCH64_MODE			(0xF)
 
 /*
- * +-------------------------------------------+
+ * +--------------------------------------------+
  * | Binary configuration			|
- * +-------------------------------------------+
+ * +--------------------------------------------+
  */
 
 /* 1. ARM TRUSTED FIRMWARE */
 #define LLOADER_TEXT_BASE			(0x1000)
 #define CONFIG_ATF_FIP_POS			(0xD000)
 #define CONFIG_ATF_BL1_POS			(0xCD000)
-#define LLOADER_BL1_BIN			(LLOADER_TEXT_BASE + CONFIG_ATF_BL1_POS)
+#define LLOADER_BL1_BIN				(LLOADER_TEXT_BASE + \
+							CONFIG_ATF_BL1_POS)
 
 /* 2. BOOTROM REQUIREMENTS */
 #define CONFIG_AUXAREA_ADR_POS			(0x214)
@@ -50,7 +51,7 @@
 #define CONFIG_SCS_HASHED_AREA_OFF_POS		(0x400)
 #define CONFIG_PARAM_AREA_SIG_POS		(0x2EC0)
 #define CONFIG_SUPPORT_MULTI_PARAM_POS		(0x2FE0)
-#define CONFIG_AUXCODE_AREA_POS		(0x3000)
+#define CONFIG_AUXCODE_AREA_POS			(0x3000)
 #define CONFIG_CHECKED_AREA_START		(0x6500)
 
 #define CONFIG_UNCHK_SIZE			(0x100)
@@ -60,8 +61,8 @@
 #define CONFIG_BOOT_FLAG_POS			(0x2FC4)
 #define CONFIG_BOOT_FLAG_VAL			(0x435A590D)
 
-#define CONFIG_AUX_ENC_FLAG_POS		(0x2FC8)
-#define CONFIG_AUX_ENC_FLAG_VAL		(0x2A13C812)
+#define CONFIG_AUX_ENC_FLAG_POS			(0x2FC8)
+#define CONFIG_AUX_ENC_FLAG_VAL			(0x2A13C812)
 
 #define CONFIG_PARAM_START_ADDR_POS		(0x2FE4)
 #define CONFIG_PARAM_ITEM_LEN_POS		(0x2FE8)
@@ -69,12 +70,12 @@
 #define CONFIG_BOOT_STORE_ADDR_POS		(0x2FEC)
 #define CONFIG_BOOT_STORE_ADDR_VAL		(LLOADER_TEXT_BASE)
 
-#define CONFIG_REG_SIZE			(0x2000)
+#define CONFIG_REG_SIZE				(0x2000)
 
 /*
- * +-------------------------------------------+
+ * +--------------------------------------------+
  * | Boot Message				|
- * +-------------------------------------------+
+ * +--------------------------------------------+
  */
 #define BOOT_MSG				\
 "\nLOADER:  Switched to aarch64 mode\nLOADER:  Entering ARM TRUSTED FIRMWARE\nLOADER:  CPU0 executes at 0x"
@@ -84,9 +85,9 @@
 start:
 	b _checked_area_start
 /*
- * +-------------------------------------------+
+ * +--------------------------------------------+
  * | 1. Head Area (Key and Param)		|
- * +-------------------------------------------+
+ * +--------------------------------------------+
  */
 .=CONFIG_AUXAREA_ADR_POS
 	.word _auxcode_start-LLOADER_TEXT_BASE
@@ -97,9 +98,9 @@ start:
 .=CONFIG_BOOT_ENTRY_POS
 	.word _checked_area_start
 /*
- * +-------------------------------------------+
+ * +--------------------------------------------+
  * | 2. Param Area				|
- * +-------------------------------------------+
+ * +--------------------------------------------+
  */
 .=CONFIG_PARAM_AREA_POS
 
@@ -120,9 +121,9 @@ start:
 	.fill 0x100,1,0
 
 /*
- * +-------------------------------------------+
- * | 3. Unchecked area for hisi		|
- * +-------------------------------------------+
+ * +--------------------------------------------+
+ * | 3. Unchecked area for hisi			|
+ * +--------------------------------------------+
  */
 
 /* 3.2 Boot flag */
@@ -145,9 +146,9 @@ start:
 .=CONFIG_BOOT_STORE_ADDR_POS
 	.word CONFIG_BOOT_STORE_ADDR_VAL
 /*
- * +-------------------------------------------+
+ * +--------------------------------------------+
  * | 4. Auxiliary Code Area			|
- * +-------------------------------------------+
+ * +--------------------------------------------+
  */
 .=CONFIG_AUXCODE_AREA_POS
 _auxcode_start:
@@ -157,25 +158,25 @@ _auxcode_end:
  .=CONFIG_AUXCODE_AREA_POS + CONFIG_AUXAREA_LEN
 
 /*
- * +-------------------------------------------+
+ * +--------------------------------------------+
  * | 5. Unchecked Area				|
- * +-------------------------------------------+
+ * +--------------------------------------------+
  */
 _total_boot_area_start:
 	.fill CONFIG_UNCHK_SIZE,1,0
 
 /*
- * +-------------------------------------------+
- * | 6. Checked Area (fastboot)		|
- * +-------------------------------------------+
+ * +--------------------------------------------+
+ * | 6. Checked Area (fastboot)			|
+ * +--------------------------------------------+
  */
 .=CONFIG_CHECKED_AREA_START
 _checked_area_start:
 	b	reset
 /*
- * +-------------------------------------------+
- * | 7. AUX code register files		|
- * +-------------------------------------------+
+ * +--------------------------------------------+
+ * | 7. AUX code register files			|
+ * +--------------------------------------------+
  */
 .align	9
 reg_list_start:
@@ -194,9 +195,9 @@ reg_list_end:
 .align	8
 
 /*
- * +-------------------------------------------+
+ * +--------------------------------------------+
  * | 8. ARM Trusted Firmware			|
- * +-------------------------------------------+
+ * +--------------------------------------------+
  */
 .=CONFIG_ATF_FIP_POS
 .incbin "atf/fip.bin"
@@ -206,6 +207,11 @@ reg_list_end:
 .incbin "atf/bl1.bin"
 .align	8
 
+/*
+ * +--------------------------------------------+
+ * | 9. Reset and debug code			|
+ * +--------------------------------------------+
+ */
 reset:
 	isb
 
@@ -287,9 +293,9 @@ _checked_area_reserve:
 _checked_area_end:
 
 /*
- * +-------------------------------------------+
- * | 9. Boot Signature				|
- * +-------------------------------------------+
+ * +--------------------------------------------+
+ * | 10. Boot Signature				|
+ * +--------------------------------------------+
  */
 _boot_sign_area:
 	.fill 0x100,1,0
