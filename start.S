@@ -37,17 +37,12 @@
 
 /*
  * ARM Trusted Firmware requires each of its boot stage images to start
- * on a page boundary.  LLOADER_TEXT_BASE is page-aligned.  The position of the
- * BL1 image is defined based on the position and size of the FIP.  So
- * to ensure proper alignment, the FIP position and size must both be
- * multiples of the page size (i.e., end in 000).
+ * on a page boundary.  LLOADER_TEXT_BASE is page-aligned.  The position in
+ * memory of the BL1 image is an offset from that base address, so this
+ * must be a multiple of a page size (i.e., end in 000).
  */
 #define LLOADER_TEXT_BASE			(0x1000)
-#define CONFIG_ATF_FIP_POS			(0xD000)
-#define CONFIG_ATF_FIP_SIZE			(0xC0000)
-
-#define CONFIG_ATF_BL1_POS			(CONFIG_ATF_FIP_POS + \
-							CONFIG_ATF_FIP_SIZE)
+#define CONFIG_ATF_BL1_POS			(0xD000)
 #define LLOADER_BL1_BIN				(LLOADER_TEXT_BASE + \
 							CONFIG_ATF_BL1_POS)
 #define CONFIG_ATF_BL1_SIZE			(0x13000 + 0x8000)
@@ -208,12 +203,9 @@ reg_list_end:
 
 /*
  * +--------------------------------------------+
- * | 8. ARM Trusted Firmware			|
+ * | 8. ARM Trusted Firmware (first stage)	|
  * +--------------------------------------------+
  */
-.=CONFIG_ATF_FIP_POS
-.incbin "atf/fip.bin"
-
 .=CONFIG_ATF_BL1_POS
 .incbin "atf/bl1.bin"
 
@@ -294,6 +286,14 @@ panic:
 
 str_aarch64:
 	.asciz	BOOT_MSG
+
+/*
+ * +--------------------------------------------+
+ * | 8. ARM Trusted Firmware (FIP)	|
+ * +--------------------------------------------+
+ */
+.section .fip,#alloc
+.incbin "atf/fip.bin"
 
 .section .tail,#alloc
 

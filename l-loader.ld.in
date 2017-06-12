@@ -17,6 +17,8 @@
  */
 #define LLOADER_TEXT_BASE	0x00001000
 
+#define FIP_BASE		0x00084000
+
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)
 ENTRY(start)
@@ -34,6 +36,9 @@ SECTIONS
 
 	. = ALIGN(4);
 	.bss : { *(.bss) }
+
+	. = FIP_BASE;
+       .fip : { *(.fip) }
 
 	. = ALIGN(4);
        .tail : { *(.tail) }
