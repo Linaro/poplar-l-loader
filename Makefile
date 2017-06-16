@@ -30,7 +30,7 @@ l-loader.bin: l-loader
 	$(OBJCOPY) -O binary $< $@
 	truncate -s ${LLOADER_LEN} $@
 
-l-loader: start.o debug.o
+l-loader: start.o debug.o l-loader.lds
 	$(LD) -Bstatic -Tl-loader.lds -Ttext ${TEXT_BASE} start.o debug.o -o $@
 
 start.o: start.S
@@ -39,5 +39,8 @@ start.o: start.S
 debug.o: debug.S
 	$(CC) -c -o $@ $<
 
+l-loader.lds: l-loader.ld.in
+	$(CPP) -P -o $@ - < $<
+
 clean:
-	rm -f *.o l-loader l-loader.bin mbr.bin fastboot.bin
+	rm -f *.o l-loader.lds l-loader l-loader.bin mbr.bin fastboot.bin

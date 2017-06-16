@@ -31,5 +31,3 @@ SECTIONS
 	. = ALIGN(4);
        .tail : { *(.tail) }
 }
-
-
