@@ -14,7 +14,6 @@ CC=$(CROSS_COMPILE)gcc
 LD=$(CROSS_COMPILE)ld
 OBJCOPY=$(CROSS_COMPILE)objcopy
 
-TEXT_BASE=0x1000
 LLOADER_LEN=960K
 
 all: fastboot.bin
@@ -31,10 +30,10 @@ l-loader.bin: l-loader
 	truncate -s ${LLOADER_LEN} $@
 
 l-loader: start.o debug.o l-loader.lds
-	$(LD) -Bstatic -Tl-loader.lds -Ttext ${TEXT_BASE} start.o debug.o -o $@
+	$(LD) -Bstatic -Tl-loader.lds start.o debug.o -o $@
 
 start.o: start.S
-	$(CC) -c -o $@ $< -DTEXT_BASE=${TEXT_BASE}
+	$(CC) -c -o $@ $<
 
 debug.o: debug.S
 	$(CC) -c -o $@ $<

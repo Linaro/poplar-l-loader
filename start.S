@@ -34,9 +34,10 @@
  */
 
 /* 1. ARM TRUSTED FIRMWARE */
+#define LLOADER_TEXT_BASE			(0x1000)
 #define CONFIG_ATF_FIP_POS			(0xD000)
 #define CONFIG_ATF_BL1_POS			(0xCD000)
-#define LLOADER_BL1_BIN			(TEXT_BASE + CONFIG_ATF_BL1_POS)
+#define LLOADER_BL1_BIN			(LLOADER_TEXT_BASE + CONFIG_ATF_BL1_POS)
 
 /* 2. BOOTROM REQUIREMENTS */
 #define CONFIG_AUXAREA_ADR_POS			(0x214)
@@ -66,7 +67,7 @@
 #define CONFIG_PARAM_ITEM_LEN_POS		(0x2FE8)
 
 #define CONFIG_BOOT_STORE_ADDR_POS		(0x2FEC)
-#define CONFIG_BOOT_STORE_ADDR_VAL		(TEXT_BASE)
+#define CONFIG_BOOT_STORE_ADDR_VAL		(LLOADER_TEXT_BASE)
 
 #define CONFIG_REG_SIZE			(0x2000)
 
@@ -88,7 +89,7 @@ start:
  * +-------------------------------------------+
  */
 .=CONFIG_AUXAREA_ADR_POS
-	.word _auxcode_start-TEXT_BASE
+	.word _auxcode_start-LLOADER_TEXT_BASE
 
 .=CONFIG_AUXAREA_LEN_POS
 	.word CONFIG_AUXAREA_LEN
@@ -135,7 +136,7 @@ start:
 	.word 0x1
 
 .=CONFIG_PARAM_START_ADDR_POS
-	.word reg_list_start-TEXT_BASE
+	.word reg_list_start-LLOADER_TEXT_BASE
 
 /* 3.6 param item length */
 .=CONFIG_PARAM_ITEM_LEN_POS
