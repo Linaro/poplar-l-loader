@@ -10,14 +10,7 @@
  *
  */
 
-/*
- * LLOADER_TEXT_BASE must be page-aligned.  This is because we place
- * the ARM Trusted Firmware BL1 image at a page size multiple offset
- * from that address, and that image is required to be page aligned.
- */
-#define LLOADER_TEXT_BASE	0x00001000
-
-#define FIP_BASE		0x00040000
+#include "poplar_layout.h"
 
 OUTPUT_FORMAT("elf32-littlearm", "elf32-littlearm", "elf32-littlearm")
 OUTPUT_ARCH(arm)

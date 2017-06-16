@@ -9,7 +9,11 @@
 # SPDX-License-Identifier:	GPL-2.0+
 #
 
+ARM_TRUSTED_FIRMWARE ?= ../poplar-arm-trusted-firmware/
+ARM_TF_INCLUDE ?= $(ARM_TRUSTED_FIRMWARE)/plat/hisilicon/poplar/include
+
 CROSS_COMPILE ?= arm-linux-gnueabihf-
+
 CC=$(CROSS_COMPILE)gcc
 LD=$(CROSS_COMPILE)ld
 OBJCOPY=$(CROSS_COMPILE)objcopy
@@ -33,13 +37,13 @@ l-loader: start.o debug.o l-loader.lds
 	$(LD) -Bstatic -Tl-loader.lds start.o debug.o -o $@
 
 start.o: start.S
-	$(CC) -c -o $@ $<
+	$(CC) -c -o $@ $< -I$(ARM_TF_INCLUDE)
 
 debug.o: debug.S
 	$(CC) -c -o $@ $<
 
 l-loader.lds: l-loader.ld.in
-	$(CPP) -P -o $@ - < $<
+	$(CPP) -P -o $@ - < $< -I$(ARM_TF_INCLUDE)
 
 clean:
 	rm -f *.o l-loader.lds l-loader l-loader.bin mbr.bin fastboot.bin

@@ -34,26 +34,7 @@
  */
 
 /* 1. ARM TRUSTED FIRMWARE */
-
-/*
- * ARM Trusted Firmware requires each of its boot stage images to start
- * on a page boundary.  LLOADER_TEXT_BASE is page-aligned.  The position in
- * memory of the BL1 image is an offset from that base address, so this
- * must be a multiple of a page size.  And the space reserved for BL2
- * and BL31 follow immediately after BL1 memory, so the sizes used for
- * BL1 and BL2 must also be multiples of a page size (i.e., end in 000).
- */
-#define LLOADER_TEXT_BASE			(0x1000)
-
-#define BL1_OFFSET				(0xD000)
-#define BL1_SIZE				(0x8000 + 0x8000)
-#define BL1_BASE				(LLOADER_TEXT_BASE + BL1_OFFSET)
-
-#define BL2_OFFSET				(BL1_OFFSET + BL1_SIZE)
-#define BL2_SIZE				(0xc000)
-
-#define BL31_OFFSET				(BL2_OFFSET + BL2_SIZE)
-#define BL31_SIZE				(0x14000)
+#include "poplar_layout.h"
 
 /* 2. BOOTROM REQUIREMENTS */
 #define CONFIG_AUXAREA_ADR_POS			(0x214)
