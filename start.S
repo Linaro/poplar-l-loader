@@ -44,18 +44,16 @@
  * BL1 and BL2 must also be multiples of a page size (i.e., end in 000).
  */
 #define LLOADER_TEXT_BASE			(0x1000)
-#define CONFIG_ATF_BL1_POS			(0xD000)
-#define LLOADER_BL1_BIN				(LLOADER_TEXT_BASE + \
-							CONFIG_ATF_BL1_POS)
-#define CONFIG_ATF_BL1_SIZE			(0x8000 + 0x8000)
 
-#define CONFIG_ATF_BL2_POS			(CONFIG_ATF_BL1_POS + \
-							CONFIG_ATF_BL1_SIZE)
-#define CONFIG_ATF_BL2_SIZE			(0xc000)
+#define BL1_OFFSET				(0xD000)
+#define BL1_SIZE				(0x8000 + 0x8000)
+#define BL1_BASE				(LLOADER_TEXT_BASE + BL1_OFFSET)
 
-#define CONFIG_ATF_BL31_POS			(CONFIG_ATF_BL2_POS + \
-							CONFIG_ATF_BL2_SIZE)
-#define CONFIG_ATF_BL31_SIZE			(0x14000)
+#define BL2_OFFSET				(BL1_OFFSET + BL1_SIZE)
+#define BL2_SIZE				(0xc000)
+
+#define BL31_OFFSET				(BL2_OFFSET + BL2_SIZE)
+#define BL31_SIZE				(0x14000)
 
 /* 2. BOOTROM REQUIREMENTS */
 #define CONFIG_AUXAREA_ADR_POS			(0x214)
@@ -216,21 +214,21 @@ reg_list_end:
  * | 8. ARM Trusted Firmware (first stage)	|
  * +--------------------------------------------+
  */
-.=CONFIG_ATF_BL1_POS
+.=BL1_OFFSET
 .incbin "atf/bl1.bin"
 
-.=CONFIG_ATF_BL2_POS
-.skip CONFIG_ATF_BL2_SIZE,0
+.=BL2_OFFSET
+.skip BL2_SIZE,0
 
-.=CONFIG_ATF_BL31_POS
-.skip CONFIG_ATF_BL31_SIZE,0
+.=BL31_OFFSET
+.skip BL31_SIZE,0
 
 /*
  * +--------------------------------------------+
  * | 9. Reset and debug code			|
  * +--------------------------------------------+
  */
-.=CONFIG_ATF_BL31_POS + CONFIG_ATF_BL31_SIZE
+.=BL31_OFFSET + BL31_SIZE
 reset:
 	isb
 
@@ -261,7 +259,7 @@ wait_mux_finish:
 	/* prepare the aarch64 jump address */
 	ldr	r4, =REG_PERI_CPU_RVBARADDR
 	ldr	r5, =REG_PERI_CPU_RVBARADDR_OFFSET
-	ldr	r6, =LLOADER_BL1_BIN
+	ldr	r6, =BL1_BASE
 	str	r6, [r4, r5]
 
 	/* prepare the 64bit mode */
@@ -282,7 +280,7 @@ wait_mux_finish:
 
 	adr	r0, str_aarch64
 	bl	printascii
-	ldr	r0, =LLOADER_BL1_BIN
+	ldr	r0, =BL1_BASE
 	bl	printhex8
 	mov	r0, #'\n'
 	bl	printch
