@@ -27,8 +27,8 @@ mbr.bin: generate_mbr.sh
 	bash -x $<
 
 l-loader.bin: l-loader
-	$(OBJCOPY) -O binary $< temp.bin
-	dd if=temp.bin of=$@ bs=${LLOADER_LEN} count=1 conv=sync
+	$(OBJCOPY) -O binary $< $@
+	truncate -s ${LLOADER_LEN} $@
 
 l-loader: start.o debug.o
 	$(LD) -Bstatic -Tl-loader.lds -Ttext ${TEXT_BASE} start.o debug.o -o $@
@@ -40,4 +40,4 @@ debug.o: debug.S
 	$(CC) -c -o $@ $<
 
 clean:
-	rm -f *.o l-loader l-loader.bin temp.bin temp mbr.bin fastboot.bin
+	rm -f *.o l-loader l-loader.bin mbr.bin fastboot.bin
