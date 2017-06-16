@@ -21,7 +21,7 @@ all: fastboot.bin
 
 fastboot.bin: mbr.bin l-loader.bin
 	dd if=mbr.bin of=$@ bs=512 count=1
-	dd obs=512 ibs=512 seek=1 skip=1 if=l-loader.bin of=$@ conv=notrunc
+	dd if=l-loader.bin of=$@ obs=512 ibs=512 seek=1 skip=1 conv=notrunc
 
 mbr.bin: generate_mbr.sh
 	bash -x $<
