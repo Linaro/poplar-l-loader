@@ -17,19 +17,27 @@ OBJCOPY=$(CROSS_COMPILE)objcopy
 TEXT_BASE=0x1000
 LLOADER_LEN=960K
 
-all: l-loader.bin mbr.bin
+all: fastboot.bin
+
+fastboot.bin: mbr.bin l-loader.bin
 	dd if=mbr.bin of=fastboot.bin bs=512 count=1
 	dd obs=512 ibs=512 seek=1 skip=1 if=l-loader.bin of=fastboot.bin conv=notrunc
 
-l-loader.bin: start.S debug.S
-	$(CC) -c -o start.o start.S -DTEXT_BASE=${TEXT_BASE}
-	$(CC) -c -o debug.o debug.S
-	$(LD) -Bstatic -Tl-loader.lds -Ttext ${TEXT_BASE} start.o debug.o -o l-loader
+mbr.bin: generate_mbr.sh
+	bash -x generate_mbr.sh
+
+l-loader.bin: l-loader
 	$(OBJCOPY) -O binary l-loader temp.bin
 	dd if=temp.bin of=l-loader.bin bs=${LLOADER_LEN} count=1 conv=sync
 
-mbr.bin:
-	bash -x generate_mbr.sh;
+l-loader: start.o debug.o
+	$(LD) -Bstatic -Tl-loader.lds -Ttext ${TEXT_BASE} start.o debug.o -o l-loader
+
+start.o: start.S
+	$(CC) -c -o start.o start.S -DTEXT_BASE=${TEXT_BASE}
+
+debug.o: debug.S
+	$(CC) -c -o debug.o debug.S
 
 clean:
 	rm -f *.o l-loader l-loader.bin temp.bin temp mbr.bin fastboot.bin
