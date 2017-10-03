@@ -26,9 +26,11 @@ pre-compiled binaries included at certain locations in l-loader<br/>
 - AUXCODE.img<br/>
 - BOOT_[0..2].reg<br/>
 
-AUXCODE must be located at offset CONFIG_AUXCODE_AREA_POS.<br/>
-The location of BOOT_[0..2].reg files must be placed at
-CONFIG_PARAM_START_ADDR_POS.<br/>
+The location (i.e., offset relative to the base of the TEXT segment)
+of the AUXCODE is defined by the address stored at offset
+CONFIG_AUXCODE_AREA_POS.<br/>
+The location of BOOT_[0..2].reg blocks are defined by the address
+stored at offset CONFIG_PARAM_START_ADDR_POS.<br/>
 
 
 The boot process.
