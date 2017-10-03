@@ -213,11 +213,10 @@ reg_list_end:
 reset:
 	isb
 
-	/* loop until the system is ready */
+	/* loop until the system is ready; REG_SC_GEN1 is 0 at power-on  */
 	ldr	r0, =REG_BASE_SCTL
-	mov	r1, #0
+	mov	r1, #1
 wait_mux_finish:
-	add	r1, r1, #1
 	str	r1, [r0, #REG_SC_GEN1]
 	ldr	r2, [r0, #REG_SC_GEN1]
 	cmp	r1, r2
