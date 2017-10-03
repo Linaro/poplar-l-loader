@@ -57,7 +57,7 @@ uart_base_addr_L0:
 @-------------------------------------------
 @  Macros
 @-------------------------------------------
-	.macro	addruart, rp, rv, tmp
+	.macro	addruart, rp, rv
 	ldr	\rp, =DEBUG_UART_PHYS
 	ldr	\rv, =DEBUG_UART_VIRT
 	.endm
@@ -112,7 +112,7 @@ hexbuf:	.space 16
 	.ltorg
 
 printascii:
-	addruart r3, r1, r2
+	addruart r3, r1
 	b	2f
 1:	waituart r2, r3
 	senduart r1, r3
@@ -127,7 +127,7 @@ printascii:
 	mov	pc, lr
 
 printch:
-	addruart r3, r1, r2
+	addruart r3, r1
 	mov	r1, r0
 	mov	r0, #0
 	b	1b
