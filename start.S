@@ -76,7 +76,6 @@
 #define BOOT_MSG				\
 "\nLOADER:  Switched to aarch64 mode\nLOADER:  Entering ARM TRUSTED FIRMWARE\nLOADER:  CPU0 executes at 0x"
 
-
 .global start
 start:
 	b _checked_area_start
@@ -258,6 +257,10 @@ wait_mux_finish:
 	ldr	r1, =0x103
 	str	r1, [r4]
 
+	mov	r0, #'\n'
+	bl	printch
+	adr	r0, str_version
+	bl	printascii
 	adr	r0, str_aarch64
 	bl	printascii
 	ldr	r0, =BL1_BASE
@@ -278,6 +281,8 @@ wait_mux_finish:
 panic:
 	b	panic
 
+str_version:
+	.asciz	VERSION_MSG
 str_aarch64:
 	.asciz	BOOT_MSG
 

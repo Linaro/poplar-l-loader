@@ -18,6 +18,11 @@ CC=$(CROSS_COMPILE)gcc
 LD=$(CROSS_COMPILE)ld
 OBJCOPY=$(CROSS_COMPILE)objcopy
 
+# Use build date/time and Git commit id to form a version message
+VDATE=$(shell date '+%Y/%m/%d %H:%M:%S%z')
+VCOMMIT=$(shell git rev-parse --verify --short HEAD 2>/dev/null)
+VERSION_MSG='"LOADER:  Built $(VDATE) Commit-id $(VCOMMIT)"'
+
 LLOADER_LEN=960K
 
 all: fastboot.bin
@@ -37,7 +42,7 @@ l-loader: start.o debug.o l-loader.lds
 	$(LD) -Bstatic -Tl-loader.lds start.o debug.o -o $@
 
 start.o: start.S
-	$(CC) -c -o $@ $< -I$(ARM_TF_INCLUDE)
+	$(CC) -c -o $@ $< -I$(ARM_TF_INCLUDE) -DVERSION_MSG=$(VERSION_MSG)
 
 debug.o: debug.S
 	$(CC) -c -o $@ $<
