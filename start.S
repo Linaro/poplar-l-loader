@@ -261,7 +261,7 @@ wait_mux_finish:
 	adr	r0, str_aarch64
 	bl	printascii
 	ldr	r0, =BL1_BASE
-	bl	printhex8
+	bl	printhex
 	mov	r0, #'\n'
 	bl	printch
 	mov	r0, #'\n'

@@ -79,21 +79,12 @@ uart_base_addr_L0:
 
 	.global printascii
 	.global printch
-	.global	printhex8
+	.global	printhex
 
-printhex8:
-	mov	r1, #8
-	b	printhex
-
-printhex4:
-	mov	r1, #4
-	b	printhex
-
-printhex2:
-	mov	r1, #2
+/* print a 32-bit hexadecimal value passed via r0 */
 printhex:
 	adr	r2, hexbuf
-	add	r3, r2, r1
+	add	r3, r2, #8
 	mov	r1, #0
 	strb	r1, [r3]
 1:	and	r1, r0, #15
@@ -130,4 +121,3 @@ printch:
 	mov	r1, r0
 	mov	r0, #0
 	b	1b
-
