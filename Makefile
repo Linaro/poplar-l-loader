@@ -12,6 +12,7 @@
 ARM_TRUSTED_FIRMWARE ?= ../poplar-arm-trusted-firmware/
 ARM_TF_INCLUDE ?= $(ARM_TRUSTED_FIRMWARE)/plat/hisilicon/poplar/include
 
+# Must use a 32-bit ARM cross-compiler
 CROSS_COMPILE ?= arm-linux-gnueabihf-
 
 CC=$(CROSS_COMPILE)gcc
@@ -41,11 +42,11 @@ LLOADER_LEN=1984K
 all: fastboot.bin
 
 fastboot.bin: mbr.bin l-loader.bin
-	dd if=mbr.bin of=$@ bs=512 count=1
-	dd if=l-loader.bin of=$@ obs=512 ibs=512 seek=1 skip=1 conv=notrunc
+	@dd status=none if=mbr.bin of=$@ bs=512 count=1
+	@dd status=none if=l-loader.bin of=$@ bs=512 seek=1 skip=1 conv=notrunc
 
 mbr.bin: generate_mbr.sh
-	bash -x $<
+	bash $<
 
 l-loader.bin: l-loader
 	$(OBJCOPY) -O binary $< $@
@@ -57,6 +58,14 @@ l-loader: start.o debug.o l-loader.lds
 start.o: start.S
 	$(CC) -c -o $@ $< -I$(ARM_TF_INCLUDE) -DVERSION_MSG=$(VERSION_MSG)
 
+start.S: atf/bl1.bin atf/fip.bin
+
+atf/bl1.bin atf/fip.bin:
+	@echo ""
+	@echo "Error: \"$@\" is missing; it must be built from ARM-TF"
+	@echo ""
+	@false
+
 debug.o: debug.S
 	$(CC) -c -o $@ $<
 
@@ -64,4 +73,7 @@ l-loader.lds: l-loader.ld.in
 	$(CPP) -P -o $@ - < $< -I$(ARM_TF_INCLUDE)
 
 clean:
-	rm -f *.o l-loader.lds l-loader l-loader.bin mbr.bin fastboot.bin
+	@rm -f *.o l-loader.lds l-loader l-loader.bin mbr.bin fastboot.bin
+
+distclean: clean
+	@rm -f *.orig cscope.* atf/bl1.bin atf/fip.bin
