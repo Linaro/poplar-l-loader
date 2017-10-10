@@ -32,7 +32,7 @@ truncate --size=${SIZE} ${TEMP_FILE}
 	echo "start=1      size=8191     type=f0"
 	echo "start=8192   size=279336   type=0c bootable"
 	echo "start=288768 size=14981120 type=83"
-} | sfdisk --quiet --no-reread --no-tell-kernel ${TEMP_FILE}
+} | sfdisk --quiet ${TEMP_FILE}
 
 # Extract just the MBR
 dd status=none if=${TEMP_FILE} of=mbr.bin bs=${SECTOR_SIZE_BYTES} count=1
