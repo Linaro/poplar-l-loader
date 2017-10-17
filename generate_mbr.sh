@@ -27,12 +27,11 @@ SIZE=$((${SECTOR_NUMBER} * ${SECTOR_SIZE_BYTES}))
 
 echo "Creating MBR for Poplar eMMC"
 truncate --size=${SIZE} ${TEMP_FILE}
-{
-	echo "label: dos"
-	echo "start=1      size=8191     type=f0"
-	echo "start=8192   size=279336   type=0c bootable"
-	echo "start=288768 size=14981120 type=83"
-} | sfdisk --quiet ${TEMP_FILE}
+sfdisk -uS --force --quiet ${TEMP_FILE} << EOF
+1,8191,f0
+,279336,0c,*
+288768,,83
+EOF
 
 # Extract just the MBR
 dd status=none if=${TEMP_FILE} of=mbr.bin bs=${SECTOR_SIZE_BYTES} count=1
