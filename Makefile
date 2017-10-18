@@ -41,12 +41,14 @@ LLOADER_LEN=1984K
 
 all: fastboot.bin
 
-fastboot.bin: mbr.bin l-loader.bin
-	@dd status=none if=mbr.bin of=$@ bs=512 count=1
-	@dd status=none if=l-loader.bin of=$@ bs=512 seek=1 skip=1 conv=notrunc
+fastboot.bin: mbr.bin bootloader.bin
+	@cat mbr.bin bootloader.bin > $@
 
 mbr.bin: generate_mbr.sh
 	bash $<
+
+bootloader.bin: l-loader.bin
+	@dd status=none if=$< of=$@ bs=512 skip=1 conv=notrunc
 
 l-loader.bin: l-loader
 	$(OBJCOPY) -O binary $< $@
@@ -73,7 +75,8 @@ l-loader.lds: l-loader.ld.in
 	$(CPP) -P -o $@ - < $< -I$(ARM_TF_INCLUDE)
 
 clean:
-	@rm -f *.o l-loader.lds l-loader l-loader.bin mbr.bin fastboot.bin
+	@rm -f *.o l-loader.lds l-loader l-loader.bin mbr.bin fastboot.bin \
+		bootloader.bin
 
 distclean: clean
 	@rm -f *.orig cscope.* atf/bl1.bin atf/fip.bin
