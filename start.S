@@ -311,6 +311,6 @@ _boot_sign_area:
 	.fill 0x100,1,0
 _total_boot_area_end:
 
-.globl _boot_end
+.global _boot_end
 _boot_end:
 
